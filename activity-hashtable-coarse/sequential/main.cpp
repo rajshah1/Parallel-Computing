@@ -81,9 +81,9 @@ int main(int argc, char **argv)
 
   // Populate Hash Table
   for (auto & filecontent: wordmap) {
-    for (int i=0;i<filecontent.size();i++){
+  /*   for (int i=0;i<filecontent.size();i++){
       std:: cout << filecontent.at(i);
-    }
+    } */
 
     for (auto & w : filecontent) {
       int count = dict.get(w);
