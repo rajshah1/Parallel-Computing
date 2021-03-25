@@ -40,9 +40,6 @@ std::vector<std::vector<std::string>> tokenizeLyrics(const std::vector<std::stri
       }
     }
     //std::cout<<"read "<<my_vect.size()<<" words\n";
-  //  for (int i=0;i<my_vect.size();i++){
-   //   std:: cout <<my_vect.at(i); 
-   // }
     ret.push_back(my_vect);
   }
   return ret;
@@ -81,10 +78,6 @@ int main(int argc, char **argv)
 
   // Populate Hash Table
   for (auto & filecontent: wordmap) {
-  /*   for (int i=0;i<filecontent.size();i++){
-      std:: cout << filecontent.at(i);
-    } */
-
     for (auto & w : filecontent) {
       int count = dict.get(w);
       ++count;
@@ -97,15 +90,15 @@ int main(int argc, char **argv)
   std::chrono::duration<double> time_elapsed = stop-start;
 
   // Check Hash Table Values
-  
-  /* for (auto it : dict) {
+  /*
+  for (auto it : dict) {
     if (it.second > thresholdCount)
       std::cout << it.first << " " << it.second << std::endl;
   }
-   */
+  */
 
   // Need for test cases.
-  std::cout << ht.get(testWord) << std::endl;
+  //std::cout << ht.get(testWord) << std::endl;
 
   std::cerr << time_elapsed.count()<<"\n";
 
