@@ -119,14 +119,15 @@ int main(int argc, char **argv)
 
 
 
-
   for (auto &t : threadgroup)
     t.join();
-
-
+  
   // Stop Timer
   auto stop = std::chrono::steady_clock::now();
   std::chrono::duration<double> time_elapsed = stop-start;
+
+
+
 
   // Check Hash Table Values
   /* (you can uncomment, but this must be commented out for tests)
