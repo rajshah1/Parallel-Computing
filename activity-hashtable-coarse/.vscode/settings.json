@@ -39,6 +39,7 @@
         "thread": "cpp",
         "utility": "cpp",
         "typeinfo": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "shared_mutex": "cpp"
     }
 }

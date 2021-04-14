@@ -56,16 +56,19 @@ std::vector<std::vector<std::string>> tokenizeLyrics(const std::vector<std::stri
 
 void hash_addition(std::vector<std::string> filecontent, Dictionary<std::string, int> &dict, std ::mutex &mut)
 {
+  // To avoid race condition locking resourses
+  mut.lock();
   for (auto &w : filecontent)
   {
-    // To avoid race condition locking resourses
-    mut.lock();
+    
+    
     int count = dict.get(w);
     ++count;
     dict.set(w, count);
-    //Unlocking Resources
-    mut.unlock();
+    
   }
+  //Unlocking Resources
+    mut.unlock();
 }
 int main(int argc, char **argv)
 {
@@ -115,12 +118,15 @@ int main(int argc, char **argv)
   }
 
 
-    // Stop Timer
-  auto stop = std::chrono::steady_clock::now();
-  std::chrono::duration<double> time_elapsed = stop-start;
+
 
   for (auto &t : threadgroup)
     t.join();
+
+
+  // Stop Timer
+  auto stop = std::chrono::steady_clock::now();
+  std::chrono::duration<double> time_elapsed = stop-start;
 
   // Check Hash Table Values
   /* (you can uncomment, but this must be commented out for tests)
@@ -132,6 +138,7 @@ int main(int argc, char **argv)
 
   // Do not touch this, need for test cases
   std::cout << ht.get(testWord) << std::endl;
+  
   std::cerr << time_elapsed.count()<<"\n";
 
   return 0;

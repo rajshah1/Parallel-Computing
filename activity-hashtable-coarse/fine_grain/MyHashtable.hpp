@@ -4,6 +4,8 @@
 #include <functional>
 #include <iostream>
 #include <vector>
+#include <mutex>
+#include <condition_variable>
 
 template<class K, class V>
 struct Node {
@@ -28,6 +30,8 @@ protected:
   int count;
   double loadFactor;
   std::vector<Node<K,V>*> table;
+  // std::vector<std::mutex> mutVec = std::vector<std::mutex>(10000);
+  std::mutex mutVec[100000];
 
   struct hashtable_iter : public dict_iter {
     MyHashtable& mt;
@@ -145,13 +149,62 @@ public:
   }
 
   /**
+   * modify the node at given key
+   * @param key key of node to be modified
+   */
+  virtual void update_increment(K& key){
+    int status = 0;
+    std::condition_variable_any cond;
+
+    std::size_t index = std::hash<K>{}(key) % this->capacity;
+    index = index < 0 ? index + this->capacity : index;
+
+    
+    Node<K,V>* node = this->table[index];
+
+    mutVec[index].lock();
+    cond.wait(mutVec[index], [&](){return !status;});
+    // std::cout<<"index :: "<<index << " :: "<<std::hash<K>{}(key)<<std::endl;
+    
+    if(index){
+      while (node != nullptr) {
+        if (node->key == key) {
+          node->value = node->value + 1;
+          cond.notify_one();
+          mutVec[index].unlock();
+          return;
+        }
+        node = node->next;
+      }
+    }
+
+    //if we get here, then the key has not been found
+    //std::mutex mut;
+    //mut.lock();
+    node = new Node<K,V>(key, 1);
+    node->next = this->table[index];
+    this->table[index] = node;
+    this->count++;
+    //mut.unlock();
+    if (((double)this->count)/this->capacity > this->loadFactor) {
+      int cap = this->capacity * 2;
+      //std::thread resizeThread(this->capacity, cap);
+      //resizeThread.join();
+      this->resize(this->capacity * 2);
+    }
+    status = 1;
+    cond.notify_one();
+    mutVec[index].unlock();
+  }
+
+  /**
    * deletes the node at given key
    * @param key key of node to be deleted
    */
   virtual void deleteKey(const K& key) {
   }
 
-  MyHashtable(): MyHashtable(100000, 10.0) {}
+  MyHashtable(): MyHashtable(10000, 10.0) {}
   MyHashtable(int capacity): MyHashtable(capacity, 10.0) {}
   MyHashtable(int capacity, double loadFactor): capacity(capacity), count(0), loadFactor(loadFactor) {
     
