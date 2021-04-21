@@ -21,12 +21,12 @@ for intensity in $INTENSITIES;
 do
     for n in $NSPLOT;
     do
-        if [ ! -s "${SEQ_RESULTDIR}sequential_${n}_${intensity}" ]];
+        if [ ! -s "${SEQ_RESULTDIR}sequential_${n}_${intensity}" ];
         then
             echo Go to the \'sequential\' directory and run \'make bench\' before plotting
             exit 1
         fi
-        if [ ! -s "${RESULTDIR}static_${n}_${intensity}_1" ]];
+        if [ ! -s "${RESULTDIR}static_${n}_${intensity}_1" ];
         then
             echo Run \'make bench\' and let all jobs finish before plotting
             exit 1

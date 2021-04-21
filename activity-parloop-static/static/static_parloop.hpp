@@ -3,13 +3,6 @@
 
 #include <functional>
 
-struct my_struct
-{
-
-  float sum;
-  int ub, lb, function_id, intensity;
-  float a, b, mid;
-};
 
 
 
