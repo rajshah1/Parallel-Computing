@@ -3,10 +3,10 @@
 
 #include <functional>
 
+std::vector<std::thread> threadVec;
 
-
-
-class SeqLoop {
+class SeqLoop
+{
 public:
   /// @brief execute the function f multiple times with different
   /// parameters possibly in parallel
@@ -14,9 +14,11 @@ public:
   /// f will be executed multiple times with parameters starting at
   /// beg, no greater than end, in inc increment. These execution may
   /// be in parallel
-  void parfor (size_t beg, size_t end, size_t inc,
-	       std::function<void(int)> f) {
-    for (size_t i=beg; i<end; i+= inc) {
+  void parfor(size_t beg, size_t end, size_t inc,
+              std::function<void(int)> f)
+  {
+    for (size_t i = beg; i < end; i += inc)
+    {
       f(i);
     }
   }
@@ -38,35 +40,40 @@ public:
   ///
   /// Once the iterations are complete, each thread will execute after
   /// on the TLS object. No two thread can execute after at the same time.
-  template<typename TLS>
-  void parfor (size_t beg, size_t end, size_t increment,
-	       std::function<void(TLS&)> before,
-	       std::function<void(int, TLS&)> f,
-	       std::function<void(TLS&)> after
-	       ) {
+  template <typename TLS>
+  void parfor(size_t beg, size_t end, size_t increment,
+              std::function<void(TLS &)> before,
+              std::function<void(int, TLS &)> f,
+              std::function<void(TLS &)> after)
+  {
     TLS tls;
-    before(tls);    
-    for (size_t i=beg; i<end; i+= increment) {
+    before(tls);
+    for (size_t i = beg; i < end; i += increment)
+    {
       f(i, tls);
     }
     after(tls);
   }
 
-
-  template<typename TLS>
-  void parfor (size_t beg, size_t end, size_t increment,int nbthreads,
-	       std::function<void(TLS&)> before,
-	       std::function<void(int, TLS&)> f,
-	       std::function<void(TLS&)> after
-	       ) {
-    TLS tls;
-    before(tls);    
-    for (size_t i=beg; i<end; i+= increment) {
+  template <typename TLS>
+  void parfor(size_t beg, size_t end, size_t increment, int nbthreads,
+              std::function<void(TLS [])> before,
+              std::function<void(int, TLS [])> f,
+              std::function<void(TLS [])> after)
+  {
+    TLS tls[nbthreads];
+    before(tls);
+    for (size_t i = beg; i < nbthreads; i += 1)
+    {
       f(i, tls);
-    }
+      //threadVec.push_back(std::thread(f,std::ref(i)));
+    }/* 
+    for (auto &t : threadVec)
+    {
+      t.join();
+    } */
     after(tls);
   }
-  
 };
 
 #endif
