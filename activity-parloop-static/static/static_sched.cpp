@@ -8,6 +8,7 @@
 #include <thread>
 #include <vector>
 
+
 #include "./static_parloop.hpp"
 
 using namespace std;
@@ -35,7 +36,7 @@ struct my_struct
 
 float total_sum = 0;
 
-float numerical_integration(void *p)
+void *numerical_integration(void *p)
 {
 
   my_struct *struct_info = (my_struct *)p;
@@ -74,9 +75,9 @@ float numerical_integration(void *p)
     }
     break;
   }
-  float insum = struct_info->sum;
-  // cout << insum;
-  return insum;
+
+
+  return NULL;
 }
 
 int main(int argc, char *argv[])
@@ -107,8 +108,7 @@ int main(int argc, char *argv[])
   float sum[nbthreads];
   int computations = n / nbthreads;
   struct my_struct struct_info[nbthreads];
-
-  std::vector<std::thread> threadVec;
+  pthread_t thread[nbthreads];
 
   auto start_time = chrono::system_clock::now();
 
@@ -139,57 +139,16 @@ int main(int argc, char *argv[])
       [&](float& tls) -> void {
         current_fun_value_sum += tls;
       });
-
-
   std::cout << current_fun_value_sum * lubs_avg;
-
 */
   int j = 0;
-  l1.parfor<float>(
-      0, n, 1, nbthreads, [&](float tls[]) -> void {
-        tls[nbthreads]={};
-      },
-      [&](int i, float tls[]) -> void {
-        if (j < n)
-        {
-          struct_info[i].a = a;
-          struct_info[i].b = b;
-          struct_info[i].function_id = function_id;
-          struct_info[i].intensity = intensity;
-          struct_info[i].mid = lubs_avg;
-          struct_info[i].lb = j;
-          struct_info[i].sum = 0;
-
-          if ((i + 1) >= nbthreads)
-          {
-
-            struct_info[i].ub = n - 1;
-          }
-          else
-          {
-            struct_info[i].ub = j + (computations - 1);
-          }
-          tls[i] = numerical_integration((void *)&struct_info[i]);
-        }
-        j += computations;
-      },
-      [&](float tls[]) {
-        for (int i = 0; i < nbthreads; i += 1)
-        {
-          total_sum += tls[i];
-        }
-      }
-
-  );
-  cout << lubs_avg * total_sum;
-
-  /*  int j = 0;
 
   for (int i = 0; i < nbthreads; i++)
   {
     if (j < n)
     {
       struct_info[i].a = a;
+
       struct_info[i].b = b;
       struct_info[i].function_id = function_id;
       struct_info[i].intensity = intensity;
@@ -202,33 +161,28 @@ int main(int argc, char *argv[])
 
         struct_info[i].ub = n - 1;
       }
+
       else
       {
 
         struct_info[i].ub = j + (computations - 1);
       }
 
-     threadVec.push_back(std::thread(numerical_integration, (void *)&struct_info[i]));
+      pthread_create(&thread[i], NULL, numerical_integration, (void *)&struct_info[i]);
     }
 
     j += computations;
   }
-
-  for (auto &t : threadVec)
+  for (int i = 0; i < nbthreads; i += 1)
   {
-    t.join();
+    pthread_join(thread[i], NULL);
   }
-
   for (int i = 0; i < nbthreads; i += 1)
   {
     total_sum += struct_info[i].sum;
   }
 
   cout << lubs_avg * total_sum;
- */
-
-
-
 
   auto end_time = chrono::system_clock::now();
   chrono::duration<double> mytime = end_time - start_time;
