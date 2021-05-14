@@ -1,0 +1,3 @@
+A higher speedup is obtained in fine grain synchronization with the max obtained by 3 and varying between 3 to 4.Fine grain architecture takes less time to compute than coarse grain architecture. Programs are divided into a vast number of minor activities here. The degree of parallelism in Fine Grain is much higher than in Coarse Grain. The number of subcomponents is much lower in this case than in the Coarse grained case. Fine grain has a proper load balancing.The detailed definition is further broken down into several small subcomponents, making the processes less intricate than the initial and coarse-grained versions.
+There are two forms of parallelism that can be seen here – 
+Parallelism at the instruction level and parallelism at the loop level
