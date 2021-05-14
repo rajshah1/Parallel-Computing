@@ -1,0 +1,1 @@
+The task assignment component of the code must be synchronized with a mutex, which is different from the static operation. As a result, it can take longer to complete, and can also affect the speed of the whole looping phase (because only one task can be performed at a time).

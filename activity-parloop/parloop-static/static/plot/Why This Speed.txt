@@ -1,0 +1,3 @@
+Does the speedup you achieve look right?
+
+ the processing time of iteration i, a static schedule gets: Cmax= maxt(t+1)n/T∑i=t∗n/Tpi That could be very imbalanced. As we used threads in for loop and used TLS (Thread Local Storage) which enables multiple threads to run and use thread specific storage. It also helps with not using locks. So the distribution of work is done among them and hence the speed up increases.As number of threads increased there was distribution of work among them and hence the speed up increases
